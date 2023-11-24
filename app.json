@@ -1,0 +1,11 @@
+{
+  "expo": {
+    "name": "whatsapp",
+    "slug": "whatsapp",
+    "version": "1.0.0",
+    "assetBundlePatterns": [
+      "**/*"
+    ]
+  },
+  "name": "whatsapp"
+}
