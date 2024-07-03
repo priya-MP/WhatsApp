@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity } from 'react-native';
 import firebase from 'firebase/compat/app';
-import 'firebase/compat/database';
-import 'firebase/compat/auth';
+import 'firebase/auth';
+import 'firebase/compat/firestore';
 
 // ** Icons ** //
 import { Ionicons } from 'react-native-vector-icons';
@@ -19,7 +19,7 @@ import styles from './styles';
 const ChatDetails = (props) => {
     const [isOpponentTyping, setIsOpponentTyping] = useState(false);
     const [input, setInput] = useState('');
-    const user = firebase.auth().currentUser;
+    const user =  firebase.auth().currentUser;
     const opponentUserId = props.opponentUserId; // assume you have this prop
 
     useEffect(() => {

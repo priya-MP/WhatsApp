@@ -14,7 +14,9 @@ const firebaseConfig = {
   appId: "1:327704011010:android:207875f30d23b96a87e21b",
 };
 
-//firebase.initializeApp(firebaseConfig);
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig);
+}
 
 // registerRootComponent calls AppRegistry.registerComponent('main', () => App);
 // It also ensures that whether you load the app in Expo Go or in a native build,
