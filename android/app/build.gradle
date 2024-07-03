@@ -76,6 +76,10 @@ def enableProguardInReleaseBuilds = (findProperty('android.enableProguardInRelea
  */
 def jscFlavor = 'org.webkit:android-jsc:+'
 
+project.ext.react = [
+    enableHermes: false  // Make sure this is set to true
+]
+
 android {
     ndkVersion rootProject.ext.ndkVersion
 
@@ -137,6 +141,14 @@ android {
 dependencies {
     // The version of react-native is set by the React Native Gradle Plugin
     implementation("com.facebook.react:react-android")
+    implementation project(':react-native-screens')
+    implementation project(':react-native-svg')
+
+    implementation platform('com.google.firebase:firebase-bom:34.1.1')
+
+    implementation 'com.google.firebase:firebase-analytics'
+    implementation 'com.google.android.gms:play-services-safetynet:17.0.0'
+    implementation 'com.google.firebase:firebase-auth'
 
     def isGifEnabled = (findProperty('expo.gif.enabled') ?: "") == "true";
     def isWebpEnabled = (findProperty('expo.webp.enabled') ?: "") == "true";
@@ -170,7 +182,7 @@ dependencies {
     debugImplementation("com.facebook.flipper:flipper-fresco-plugin:${FLIPPER_VERSION}")
 
     if (hermesEnabled.toBoolean()) {
-        implementation("com.facebook.react:hermes-android")
+        implementation("com.facebook.react:hermes-android:0.72.6")
     } else {
         implementation jscFlavor
     }
