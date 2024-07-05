@@ -1,5 +1,7 @@
 import React from 'react';
 import { View, FlatList, Text, TouchableOpacity } from 'react-native';
+import { connect } from 'react-redux';
+import { isEmpty } from 'lodash';
 
 // Constants
 import { contacts } from '../../utils/constants';
@@ -8,10 +10,10 @@ import { contacts } from '../../utils/constants';
 import styles from './styles';
 
 const Chats = (props) => {
-    const { navigation } = props;
+    const { navigation,getLoggedUser } = props;
 
-    const renderItem = ({ name, location }) => (
-        <TouchableOpacity style={styles.item} onPress={() => navigation.navigate('ChatDetails', { name, location  })}>
+    const renderItem = ({ name, location }, index) => (
+        <TouchableOpacity key={index} style={styles.item} onPress={() => navigation.navigate('ChatDetails', { name, location  })}>
             <View style={styles.avatar}>
                 <Text style={styles.label}>{name[0]}</Text>
             </View>
@@ -22,14 +24,22 @@ const Chats = (props) => {
         </TouchableOpacity>
     );
 
+    const filteredData = !isEmpty(getLoggedUser) ? (contacts || []).filter(item => item.email !== getLoggedUser?.user?.email) : (contacts || []);
 
     return (
         <FlatList
-            data={contacts}
-            renderItem={({ item }) => renderItem(item)}
+            data={filteredData}
+            renderItem={({item}, index) => renderItem(item, index)}
             keyExtractor={item => item.id}
         />
     );
 };
 
-export default Chats;
+const mapStateToProps  = (state) => {
+    const { global } = state;
+    return {
+        getLoggedUser: global?.getLoggedUser
+    }
+}
+
+export default connect(mapStateToProps)(Chats);

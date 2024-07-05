@@ -2,7 +2,7 @@ import React from "react";
 import { View, StyleSheet, TouchableOpacity, Dimensions, TextInput } from 'react-native';
 
 // ** redux ** //
-import * as callActions from '../redux/actions';
+import * as callActions from '../redux/actions/global';
 // ** icons ** //
 import AntDesign from 'react-native-vector-icons/AntDesign';
 

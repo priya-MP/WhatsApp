@@ -5,7 +5,6 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Provider } from 'react-redux';
 import { StatusBar } from 'react-native';
 import SplashScreen from 'react-native-splash-screen';
-import 'firebase/compat/database';
 
 //** routs  */
 import { routesHandler } from './src/routes';
@@ -42,7 +41,7 @@ const tabBarScreenOptions = {
   tabBarInactiveTintColor: '#a3a3a3',
 }
 
-export default function App() {
+const App = () => {
 
   useEffect(() => {
     SplashScreen?.hide();
@@ -98,3 +97,5 @@ export default function App() {
     </Provider>
   );
 }
+
+export default App;

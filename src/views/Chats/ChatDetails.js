@@ -1,72 +1,92 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity } from 'react-native';
-import firebase from 'firebase/compat/app';
-import 'firebase/auth';
-import 'firebase/compat/firestore';
+import React, { useLayoutEffect, useCallback } from 'react';
+import { View } from 'react-native';
+import { connect } from 'react-redux';
+import { isEmpty } from 'lodash';
 
-// ** Icons ** //
-import { Ionicons } from 'react-native-vector-icons';
+import { auth, db } from '../../firebase/config';
+import { collection, addDoc, query, orderBy, onSnapshot } from 'firebase/firestore';
+import { GiftedChat } from 'react-native-gifted-chat';
+
+// ** actions ** //
+import * as callActions from '../../redux/actions/global';
 
 // ** components ** //
 import { CustomHeader } from '../../components';
 
-// ** utils ** //
-import { commonColors } from '../../utils/colors';
-
-// ** Styles ** //
-import styles from './styles';
-
 const ChatDetails = (props) => {
-    const [isOpponentTyping, setIsOpponentTyping] = useState(false);
-    const [input, setInput] = useState('');
-    const user =  firebase.auth().currentUser;
-    const opponentUserId = props.opponentUserId; // assume you have this prop
+    const { setChatHistory, chatHistory, navigation } = props;
 
-    useEffect(() => {
-        const typingRef = firebase.database().ref(`typing/${opponentUserId}`);
-        typingRef.on('value', (snapshot) => {
-            const isTyping = snapshot.val();
-            console.log(isTyping, snapshot, "----------------------------isTyping, snapshot,")
-            setIsOpponentTyping(isTyping);
+    useLayoutEffect(() => {
+        const q = query(collection(db, 'chats'), orderBy('createdAt', 'desc'));
+        const unsubscribe = onSnapshot(q, (snapshot) => {
+            const messages = snapshot.docs.map(doc => {
+                const data = doc.data();
+                if (data) {
+                    return {
+                        _id: doc.id, // Use doc.id as _id if necessary
+                        createdAt: data.createdAt.toDate(),
+                        text: data.text,
+                        user: data.user,
+                    };
+                } else {
+                    return null; // Handle null or undefined case
+                }
+            }).filter(Boolean); // Filter out any null values
+    
+            setChatHistory(!isEmpty(messages) ? messages : []);
+
+        }, (error) => {
+            console.error('Error fetching messages:', error);
+            // Handle error condition
+            setChatHistory(chatHistory)
         });
+    
         return () => {
-            typingRef.off(); // remove listener on unmount
+            unsubscribe();
         };
-    }, [opponentUserId, user]);
+    
+    }, [navigation]);
 
-    const handleTyping = (text) => {
-        setInput(text);
-        console.log(user, "----user")
-        // const userTypingRef = firebase.database().ref(`typing/${user.uid}`);
-       // userTypingRef.set(true); // set typing indicator for current user
-    };
-
-    const handleSend = () => {
-        const userTypingRef = firebase.database().ref(`typing/${user.uid}`);
-        // send message logic
-        userTypingRef.set(false); // reset typing indicator
-    };
+    const onSend = useCallback((messages = []) => {
+        messages.forEach(message => {
+            const { _id, createdAt, text, user } = message;
+            addDoc(collection(db, 'chats'), { _id, createdAt, text, user })
+                .then(() => console.log('Message sent: ', messages[0]))
+                .catch(error => console.error('Error sending message: ', error));
+        });
+    }, []);
 
     return (
         <View style={{ flex: 1 }}>
             <CustomHeader type={'chat'} {...props} />
 
-            {isOpponentTyping ? <Text>Typing...</Text> : null}
-
-            <View style={styles.contentcontainer}>
-                <TextInput
-                    placeholder="Type a message..."
-                    placeholderTextColor={commonColors?.muted?.[300]}
-                    value={input}
-                    style={[styles.input, { width: input? '85%' : '100%' }]}
-                    onChangeText={handleTyping}
+            <View style={{ flex: 1 }}>
+                <GiftedChat
+                    messages={(chatHistory || [])}
+                    showAvatarForEveryMessage={true}
+                    onSend={messages => onSend(messages)}
+                    user={{
+                        _id: auth?.currentUser?.email,
+                        name: auth?.currentUser?.displayName,
+                        avatar: auth?.currentUser?.photoURL
+                    }}
                 />
-               {input && <TouchableOpacity onPress={handleSend} style={styles.sendbtn}>
-                    <Ionicons name="send" size={20} color={commonColors?.commonWhite} />
-                </TouchableOpacity>}
             </View>
         </View>
     );
 };
 
-export default ChatDetails;
+const mapStateToProps = (state) => {
+    const { global } = state;
+    return {
+        chatItem: global?.chatItem,
+        chatHistory: global?.chatHistory
+    }
+};
+
+const mapDispatchToProps = (dispatch) => ({
+    setChatItem: (data) => dispatch(callActions?.SetChatItem(data)),
+    setChatHistory: (data) => dispatch(callActions?.setChatHistory(data)),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(ChatDetails);

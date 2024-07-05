@@ -69,6 +69,31 @@ const styles = StyleSheet.create({
         backgroundColor: commonColors?.teal?.[600],
         alignItems: 'center',
         justifyContent: 'center',
+    },
+    messagescontainer: {
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'flex-start',
+        alignItems: 'flex-start',
+        marginHorizontal: 10,
+        marginBottom: 10
+    },
+    message: {
+        backgroundColor: commonColors?.muted?.[300],
+        width: 150,
+        // height: 40,
+        borderRadius: 20,
+        paddingHorizontal: 10,
+        paddingVertical: 5,
+        display: 'flex',
+        justifyContent: 'center',
+        margin: 5
+    },
+    messagetext: {
+        fontSize: 14,
+        color: commonColors?.commonWhite,
+        fontWeight: '500',
+        textAlign: 'left',
     }
 });
 

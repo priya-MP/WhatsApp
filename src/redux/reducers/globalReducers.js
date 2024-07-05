@@ -1,6 +1,15 @@
-import { GET_USERS, GET_ALL_LANGUAGE_LIST, GET_ALL_QUESTION_LIST, GET_ALL_COUNTRIES, SET_COUNTRY_ITEM, SET_SEARCH_COUNTRY } from "../types";
+import {
+    GET_USERS,
+    GET_ALL_LANGUAGE_LIST,
+    GET_ALL_QUESTION_LIST,
+    GET_ALL_COUNTRIES,
+    SET_COUNTRY_ITEM,
+    SET_SEARCH_COUNTRY,
+    SET_CHAT_ITEM,
+    SET_CHAT_HISTORY,
+    SET_LOGGED_USER
+} from "../types";
 import * as constants from '../../utils/constants';
-import { isEmpty } from "lodash";
 
 const initialState = {
     getallusers: [],
@@ -8,6 +17,14 @@ const initialState = {
     getallquestions: constants?.questions,
     getallcountries: [],
     searchCountry: "",
+    getLoggedUser: {},
+    chatHistory: [],
+    chatItem: {
+        type: '',
+        message: '',
+        userId: '',
+        isTyping: false
+    },
     countryItem: {
         code: "IN",
         dial_code: "+91",
@@ -46,6 +63,21 @@ function reducer(state = initialState, action) {
             return {
                 ...state,
                 searchCountry: action?.payload,
+            };
+        case SET_CHAT_ITEM:
+            return {
+                ...state,
+                chatItem: action?.payload,
+            };
+        case SET_CHAT_HISTORY:
+            return {
+                ...state,
+                chatHistory: action?.payload,
+            };
+        case SET_LOGGED_USER:
+            return {
+                ...state,
+                getLoggedUser: action?.payload,
             };
         default:
             return state;

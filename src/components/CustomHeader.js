@@ -6,18 +6,27 @@ import { Feather, MaterialCommunityIcons, Ionicons } from 'react-native-vector-i
 
 //** utils */
 import { commonColors } from '../utils/colors';
+import { connect } from 'react-redux';
 
 
 const CustomHeader = (props) => {
-    const { route } = props
+    const { route, chatItem } = props;
     return (
         <>
             <StatusBar hidden={false} />
             <View style={styles.header}>
                 <View style={styles.container}>
                     <View style={styles.namecontainer}>
-                        {route?.params?.name && <Ionicons name="arrow-back" size={22} color={commonColors?.commonWhite} />}
-                        <Text style={[styles.name, { marginLeft: route?.params?.name ? 10 : 0 }]}>{route?.params?.name ? route?.params?.name : 'WhatsApp'}</Text>
+                        {route?.params?.name && <>
+                            <Ionicons name="arrow-back" size={24} color={commonColors?.commonWhite} />
+                            <View style={styles.avatar}>
+                                <Text style={styles.label}>{route?.params?.name[0]}</Text>
+                            </View>
+                        </>}
+                        <View style={styles.content}>
+                            <Text style={styles.name}>{route?.params?.name ? route?.params?.name : 'WhatsApp'}</Text>
+                            {route?.params?.name && chatItem?.isTyping && <Text style={styles.subcontent}>{'typing...'}</Text>}
+                        </View>
                     </View>
                     <View style={styles.iconCointainer}>
                         <Feather name={route?.params?.name ? 'video' : "search"} size={22} color={commonColors?.commonWhite} />
@@ -31,7 +40,15 @@ const CustomHeader = (props) => {
     );
 }
 
-export default CustomHeader;
+const mapStateToProps = (state) => {
+    const { global } = state;
+    return {
+        chatItem: global?.chatItem
+    }
+};
+
+
+export default connect(mapStateToProps, null)(CustomHeader);
 
 
 const styles = StyleSheet.create({
@@ -52,12 +69,38 @@ const styles = StyleSheet.create({
     namecontainer: {
         display: 'flex',
         flexDirection: 'row',
+        alignItems: 'center'
     },
     container: {
         display: 'flex',
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center'
+    },
+    avatar: {
+        width: 40,
+        height: 40,
+        borderRadius: 20,
+        backgroundColor: commonColors?.muted?.[300],
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginHorizontal: 5
+    },
+    content: {
+        display: 'flex',
+        flexDirection: 'column',
+    },
+    subcontent: {
+        fontSize: 10,
+        textAlign: 'left',
+        fontWeight: '800',
+        color: commonColors?.muted[300]
+    },
+    label: {
+        fontSize: 16,
+        fontWeight: '800',
+        color: commonColors?.commonWhite,
+        textAlign: 'center',
     },
     iconCointainer: {
         width: 120,

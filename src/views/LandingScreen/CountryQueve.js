@@ -4,7 +4,7 @@ import { connect } from "react-redux";
 import { SvgUri } from 'react-native-svg';
 
 // ** actions ** //
-import * as callActions from '../../redux/actions';
+import * as callActions from '../../redux/actions/global';
 // ** components ** /
 import { HelpCentreDashboard } from '../../components';
 // ** utils ** //

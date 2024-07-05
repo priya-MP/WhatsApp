@@ -1,23 +1,22 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import { View, Text, TouchableOpacity, StyleSheet, TouchableWithoutFeedback, TextInput } from 'react-native';
 import { useNavigation } from "@react-navigation/native";
-// import firebase from 'firebase/compat/app';
-// import 'firebase/compat/auth';
-// import 'firebase/compat/firestore';
+import { connect } from "react-redux";
 
-import firebase from 'firebase/compat/app';
-import 'firebase/auth';
-import 'firebase/compat/firestore';
+import { auth } from '../../firebase/config';
+import { createUserWithEmailAndPassword, updateProfile, signInWithEmailAndPassword } from 'firebase/auth';
 
 // ** actions ** //
-import * as callActions from '../../redux/actions';
+import * as callActions from '../../redux/actions/global';
 // ** components ** //
 import { CustomModal, Popover, MediaAccessModal, ErrorModal } from '../../components';
 // ** icons ** //
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 //** utils */
 import { commonColors } from "../../utils/colors";
-import { connect } from "react-redux";
+
+// ** constants ** //
+import { contacts } from '../../utils/constants';
 
 
 const MobileNumber = (props) => {
@@ -28,7 +27,7 @@ const MobileNumber = (props) => {
     const [error, setError] = useState("");
     const [mobilenumber, setMobilenumber] = useState("");
 
-    const { setCountryItem, countryItem } = props;
+    const { setCountryItem, countryItem, setLoggedUser } = props;
 
     const navigation = useNavigation();
     const inputRef = useRef(null);
@@ -55,76 +54,72 @@ const MobileNumber = (props) => {
         setShowAccessModal(false);
     }
 
-    const handleSubmit = async () => {
-        //     const firebaseConfig = {
-        //         apiKey: "AIzaSyDdbxIiwG2heQrJLb81se6Wb-py5xXg1f4",
-        //         authDomain: "whatsapp-1426.firebaseapp.com",
-        //         projectId: "whatsapp-1426",
-        //         messagingSenderId: "327704011010",
-        //         appId: "1:327704011010:android:207875f30d23b96a87e21b"
-        //     };
-
-        //    const app =  await firebase.initializeApp(firebaseConfig);
-
-        //    console.log(app, firebase, "---------------------app, firebase")
-
-        // if (mobilenumber === "") {
-        //     setError("Please enter your phone number.")
-        // } else {
-        //     let phoneNumber = countryItem?.dial_code + mobilenumber;
-
-        // firebase.auth().signInWithPhoneNumber(mobilenumber).then((confirmationResult) => {
-        //     const verificationCode = confirmationResult.verificationId;
-        //     confirmationResult.confirm(verificationCode).then((userCredential) => {
-        //         const user = userCredential.user;
-        //         console.log(user, "--------- user")
-        //     }).catch((error) => {
-        //         console.log(error, "--------- user not verified")
-        //     })
-        // }).catch((error) => {
-        //     console.log(error, "--------- Request failed with error")
-        // });
-
-        // console.log(phoneNumber, mobilenumber, countryItem?.dial_code, "---------phoneNumber, mobilenumber, countryItem?.dial_code")
-        const userRegistration = await firebase.auth()
-            .createUserWithEmailAndPassword(email, password)
-            .then((response) => {
-                const uid = response.user.uid
-                const data = {
-                    id: uid,
-                    email,
-                    fullName,
-                };
-                const usersRef = firebase.firestore().collection('users')
-                usersRef
-                    .doc(uid)
-                    .set(data)
+    const register = (userObj) => {
+        createUserWithEmailAndPassword(auth, userObj?.email, userObj?.password)
+            .then((userCredential) => {
+                // Registered
+                const user = userCredential.user;
+                updateProfile(user, {
+                    displayName: userObj?.name,
+                    photoURL: 'https://gravatar.com/avatar/94d45dbdba988afacf30d916e7aaad69?s=200&d=mp&r=x',
+                })
                     .then(() => {
-                        navigation.navigate('Home', { user: data })
+                        console.log('Registered, please login.');
+                        signin(userObj);
                     })
                     .catch((error) => {
-                        alert(error)
-                    });
+                        console.log(error.message, ":: register error");
+                    })
             })
             .catch((error) => {
-                alert(error)
+                const errorCode = error.code;
+                const errorMessage = error.message;
+                if (errorCode === 'auth/wrong-password') {
+                    setError('Incorrect password.');
+                } else if (errorCode === 'auth/user-not-found') {
+                    setError('No user found with this email.');
+                } else if (errorCode === 'auth/missing-email') {
+                    setError('Email is missing.');
+                } else if(errorCode === 'auth/email-already-in-use') {
+                   signin(userObj);
+                }else {
+                    setError(error.message);
+                }
+                console.log(errorMessage, ":: register request failed ");
             });
+    }
 
-        console.log(userRegistration, "---------userRegistration")
+    const signin = (userObj) => {
+        signInWithEmailAndPassword(auth, userObj?.email, userObj?.password)
+            .then((userCredential) => {
+                console.log(userCredential, "---userCredential")
+                setLoggedUser(userCredential);
+                navigation.navigate("Chats");
+                setError("");
+            })
+            .catch((error) => {
+                const errorCode = error.code;
+                if (errorCode === 'auth/wrong-password') {
+                    setError('Incorrect password.');
+                } else if (errorCode === 'auth/user-not-found') {
+                    setError('No user found with this email.');
+                } else if (errorCode === 'auth/missing-email') {
+                    setError('Email is missing.');
+                } else {
+                    setError(error.message);
+                }
+            });
+    };
 
-        // const confirmation = await firebase.auth().signInWithEmailAndPassword('priyareni1426@gmail.com', 'P@55w0rd!23')
-        // .then((userCredential) => {
-        //     // Signed in successfully
-        //     console.log('User signed in:', userCredential.user);
-        // })
-        // .catch((error) => {
-        //     // Handle error
-        //     console.error('Sign in error:', error);
-        // });
+    const handleSubmit = async () => {
+        if (mobilenumber === "") {
+            setError("Please enter your phone number.")
+        } else {
+            let findUserByPhone = (contacts || []).find((contact) => contact.phone === mobilenumber);
 
-        // navigation.navigate("Chats");
-        setError("");
-        // }
+            console.log(findUserByPhone, "findUserByPhone")
+            register(findUserByPhone);
+        }
     }
 
     return (
@@ -207,7 +202,8 @@ const mapStateToProps = (state) => {
 }
 
 const mapDispatchToProps = (dispatch) => ({
-    setCountryItem: (data) => dispatch(callActions?.SetCountryItem(data))
+    setCountryItem: (data) => dispatch(callActions?.SetCountryItem(data)),
+    setLoggedUser: (data) => dispatch(callActions?.setLoggedUser(data))
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(MobileNumber);

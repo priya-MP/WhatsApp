@@ -1,5 +1,5 @@
 import axios from "axios";
-import { GET_ALL_COUNTRIES, SET_COUNTRY_ITEM, SET_SEARCH_COUNTRY } from '../types';
+import { GET_ALL_COUNTRIES, SET_COUNTRY_ITEM, SET_SEARCH_COUNTRY, SET_CHAT_ITEM, SET_CHAT_HISTORY, SET_LOGGED_USER } from '../types';
 
 const getUsers = async () => {
     const response = await fetch("https://dummy.restapiexample.com/api/v1/employees");
@@ -41,9 +41,33 @@ const SetSearchCountry = (data) => {
     }
 }
 
+const SetChatItem = (data) => {
+    return {
+        type: SET_CHAT_ITEM,
+        payload: data
+    }
+}
+
+const setChatHistory = (data) => {
+    return {
+        type: SET_CHAT_HISTORY,
+        payload: data
+    }
+}
+
+const setLoggedUser = (data) => {
+    return {
+        type: SET_LOGGED_USER,
+        payload: data
+    }
+}
+
 export {
     getAllCountries,
     getUsers,
     SetCountryItem,
-    SetSearchCountry
+    SetSearchCountry,
+    SetChatItem,
+    setChatHistory,
+    setLoggedUser
 }

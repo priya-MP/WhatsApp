@@ -27,10 +27,12 @@ const questions = [
 ];
 
 const contacts = [
-    { id: 0, name: 'Jessliya', phone: '6382259675', location: 'Tamil Nadu, India' },
-    { id: 1, name: 'Iswarya', phone: '8870891444', location: 'Tamil Nadu, India' },
-    { id: 2, name: 'Mohana', phone: '8754396128', location: 'Tamil Nadu, India' },
-    { id: 3, name: 'Sandhiya', phone: '6381144270', location: 'Tamil Nadu, India' },
+    { id: 0, name: 'Jesiliya', phone: '6382259675', location: 'Tamil Nadu, India', email: 'jesiliya@yopmail.com', password: '123456' },
+    { id: 1, name: 'Priya', phone: '9150177954', location: 'Tamil Nadu, India', email: 'priya@yopmail.com', password: '123456' },
+    { id: 2, name: 'Iswarya', phone: '8870891444', location: 'Tamil Nadu, India', email: 'iswarya@yopmail.com', password: '123456' },
+    { id: 3, name: 'Mohana', phone: '8754396128', location: 'Tamil Nadu, India', email: 'mohana@yopmail.com', password: '123456' },
+    { id: 4, name: 'Sandhiya', phone: '6381144270', location: 'Tamil Nadu, India', email: 'sandhiya@yopmail.com', password: '123456' },
+    { id: 5, name: 'Abubakkar', phone: '9597472614', location: 'Tamil Nadu, India', email: 'abubakkar@yopmail.com', password: '123456' },
 ];
 
 export { langlist, questions, contacts }
