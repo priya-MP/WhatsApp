@@ -27,6 +27,12 @@ const commonColors = {
         300: '#d4d4d4',
         400: '#a3a3a3',
         500: '#737373',
+    },
+    cyanBlue:{
+        400: '#22d3ee'
+    },
+    green:{
+        200: '#bbf7d0'
     }
 }
 

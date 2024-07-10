@@ -1,66 +1,132 @@
-import React, { useLayoutEffect, useCallback } from 'react';
-import { View } from 'react-native';
+import React, { useLayoutEffect, useCallback, useState } from 'react';
+import { ImageBackground, View } from 'react-native';
 import { connect } from 'react-redux';
-import { isEmpty } from 'lodash';
+import { collection, addDoc, doc, setDoc } from 'firebase/firestore';
+import { GiftedChat, Bubble, InputToolbar, Send } from 'react-native-gifted-chat';
 
+// ** firebase ** //
 import { auth, db } from '../../firebase/config';
-import { collection, addDoc, query, orderBy, onSnapshot } from 'firebase/firestore';
-import { GiftedChat } from 'react-native-gifted-chat';
 
 // ** actions ** //
 import * as callActions from '../../redux/actions/global';
 
+// ** Icons ** //
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+
 // ** components ** //
 import { CustomHeader } from '../../components';
 
+// ** Helpers ** //
+import { unsubscribeMessages, unsubscribeType, getChatRoomId, updateMessageStatus } from '../../firebase/helpers';
+
+// ** styles ** //
+import styles from './styles';
+import { commonColors } from '../../utils/colors';
+
 const ChatDetails = (props) => {
-    const { setChatHistory, chatHistory, navigation } = props;
+    const [typingUsers, setTypingUsers] = useState([]);
 
+    const { setChatHistory, chatHistory, route, navigation } = props;
+
+    const selectedUserId = route?.params?.id?.toString(); // Get the selected user ID from route params
+    const currentUserId = auth.currentUser.uid;
+    const chatRoomId = getChatRoomId(currentUserId, selectedUserId);
+
+    // hooks to fetch messages
     useLayoutEffect(() => {
-        const q = query(collection(db, 'chats'), orderBy('createdAt', 'desc'));
-        const unsubscribe = onSnapshot(q, (snapshot) => {
-            const messages = snapshot.docs.map(doc => {
-                const data = doc.data();
-                if (data) {
-                    return {
-                        _id: doc.id, // Use doc.id as _id if necessary
-                        createdAt: data.createdAt.toDate(),
-                        text: data.text,
-                        user: data.user,
-                    };
-                } else {
-                    return null; // Handle null or undefined case
-                }
-            }).filter(Boolean); // Filter out any null values
-    
-            setChatHistory(!isEmpty(messages) ? messages : []);
+        if (!selectedUserId) return;
+        const unsubscribeMsg = unsubscribeMessages(setChatHistory, chatRoomId, chatHistory); // Reference to messages collection in the specific chat room
+        const unsubscribeTyping = unsubscribeType(setTypingUsers, chatRoomId, currentUserId); // typing event handler
 
-        }, (error) => {
-            console.error('Error fetching messages:', error);
-            // Handle error condition
-            setChatHistory(chatHistory)
-        });
-    
-        return () => {
-            unsubscribe();
-        };
-    
-    }, [navigation]);
+        updateMessageStatus(chatRoomId, currentUserId); // Update status to 'delivered' when the user sends a message
 
+        return () => { 
+            unsubscribeMsg(); 
+             unsubscribeTyping();
+         };
+    }, [navigation, selectedUserId, currentUserId, chatHistory]);
+
+
+    // Send messages
     const onSend = useCallback((messages = []) => {
         messages.forEach(message => {
             const { _id, createdAt, text, user } = message;
-            addDoc(collection(db, 'chats'), { _id, createdAt, text, user })
-                .then(() => console.log('Message sent: ', messages[0]))
+            addDoc(collection(db, 'chatRooms', chatRoomId, 'messages'), { _id, createdAt, text, user, status: 'sent', participants: [currentUserId, selectedUserId] })
+                .then(() => {
+                    console.log('Message sent successfully', message);
+                    updateMessageStatus(chatRoomId, currentUserId)
+                })
                 .catch(error => console.error('Error sending message: ', error));
         });
-    }, []);
+    }, [currentUserId, selectedUserId]);
+
+    // on input text change handler
+    const onInputTextChanged = (text) => {
+        // const chatRoomId = route?.params?.id?.toString();
+        if (!chatRoomId || !currentUserId) return;
+        const typingRef = doc(collection(db, 'chatRooms', chatRoomId, 'typing'), currentUserId);
+        setDoc(typingRef, { isTyping: text.length > 0 });
+    };
+
+
+    // render message component
+    const renderTicks = (props) => {
+        return (
+            <View style={{ paddingRight: 8, paddingBottom: 2 }}>
+                <Ionicons name={props?.status === 'sent' ? "checkmark" : "checkmark-done"}
+                    size={16} color={props?.status === 'read' ? commonColors?.cyanBlue?.[400] : commonColors?.muted?.[400]}
+                />
+            </View>
+        );
+    };
+
+
+    // render bubble component
+    const renderBubble = (props) => {
+        // backgroundColor: props.currentMessage.user._id === auth.currentUser.uid ? '#dcf8c6' : '#ffffff',
+        return (
+            <Bubble
+                {...props}
+                wrapperStyle={{
+                    left: styles.wrapperLeftContainer,
+                    right: styles.wrapperRightContainer,
+                }}
+                textStyle={{
+                    left: styles.messagetext,
+                    right: styles.messagetext,
+                }}
+                renderTicks={renderTicks}
+            />
+        );
+    };
+
+    // customize input container
+    const renderInputToolbar = (props) => {
+        return (
+            <InputToolbar
+                {...props}
+                containerStyle={styles.inputToolbar}
+                primaryStyle={{ alignItems: 'center' }}
+            />
+        );
+    };
+
+    // customize send button
+    const renderSend = (props) => {
+        return (
+            <Send {...props}>
+                <View style={styles.sendingContainer}>
+                    <MaterialCommunityIcons name="send" size={24} color={commonColors?.teal?.[600]} />
+                </View>
+            </Send>
+        );
+    };
+
 
     return (
         <View style={{ flex: 1 }}>
             <CustomHeader type={'chat'} {...props} />
-
-            <View style={{ flex: 1 }}>
+            <ImageBackground source={require('../../assets/background.png')} style={{ flex: 1, jalignItems: 'center' }}>
                 <GiftedChat
                     messages={(chatHistory || [])}
                     showAvatarForEveryMessage={true}
@@ -70,8 +136,17 @@ const ChatDetails = (props) => {
                         name: auth?.currentUser?.displayName,
                         avatar: auth?.currentUser?.photoURL
                     }}
+                    onInputTextChanged={onInputTextChanged}
+                    isTyping={typingUsers.length > 0}
+                    renderInputToolbar={renderInputToolbar}
+                    renderSend={renderSend}
+                    renderBubble={renderBubble}
+                    timeTextStyle={{
+                        left: { color: commonColors?.muted?.[400], fontSize: 9, paddingLeft: 30 },
+                        right: { color: commonColors?.muted?.[400], fontSize: 9, paddingLeft: 30 },
+                    }}
                 />
-            </View>
+            </ImageBackground>
         </View>
     );
 };

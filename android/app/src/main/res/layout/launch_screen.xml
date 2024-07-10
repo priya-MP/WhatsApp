@@ -16,20 +16,19 @@
         android:layout_height="22dp"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="80dp"
+        android:layout_marginBottom="70dp"
         android:text="from"
         android:textColor="@color/black"
         android:textSize="14sp" />
 
     <ImageView
         android:id="@+id/logoImageView"
-        android:layout_width="72dp"
-        android:layout_height="72dp"
+        android:layout_width="wrap_content"
+        android:layout_height="22dp"
         android:src="@drawable/meta"
-        android:layout_below="@+id/titleTextView"
+        android:layout_below="@id/titleTextView"
         android:layout_centerHorizontal="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="16dp"/>
+        android:layout_marginTop="20dp" />
 
     <TextView
         android:id="@+id/subtitleTextView"
@@ -38,7 +37,7 @@
         android:layout_alignTop="@+id/titleTextView"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="48dp"
+        android:layout_marginTop="40dp"
         android:layout_marginBottom="10dp"
         android:text="Meta"
         android:textColor="@color/app_bg"

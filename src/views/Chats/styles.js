@@ -47,7 +47,6 @@ const styles = StyleSheet.create({
     // ChatDetails styles
     input: {
         height: 40,
-        // margin: 12,
         borderWidth: 1,
         padding: 10,
         borderRadius: 20,
@@ -62,39 +61,48 @@ const styles = StyleSheet.create({
         justifyContent:'space-between', 
         alignItems:'center'
     },
-    sendbtn:{
+    wrapperLeftContainer: {
+        backgroundColor: '#ffffff',
+        maxWidth: '80%',
+        marginVertical: 10,
+        width: 'auto',
+        borderTopLeftRadius: 2,
+        borderBottomLeftRadius: 20,
+        borderBottomRightRadius: 20,
+        borderTopRightRadius: 20,
+    },
+    wrapperRightContainer: {
+        backgroundColor: commonColors?.green?.[200],
+        borderTopLeftRadius: 20,
+        borderBottomLeftRadius: 20,
+        borderBottomRightRadius: 20,
+        borderTopRightRadius: 2,
+        maxWidth: '80%',
+        width: 'auto',
+        marginVertical: 10
+    },
+    messagetext: {
+        color: commonColors?.black,
+        fontSize: 13,
+        paddingLeft: 5
+    },
+    inputToolbar: {
+        borderTopWidth: 0,
+        backgroundColor: commonColors?.commonWhite,
+        borderRadius: 25,
+        marginHorizontal: 10,
+        marginBottom: 5,
+        fontSize: 14, paddingTop:5
+    },
+    sendingContainer: {
         width: 40,
         height: 40,
         borderRadius: 30,
-        backgroundColor: commonColors?.teal?.[600],
+        backgroundColor: 'transparent',
         alignItems: 'center',
-        justifyContent: 'center',
+        justifyContent: 'center', 
+        paddingBottom:5
     },
-    messagescontainer: {
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'flex-start',
-        alignItems: 'flex-start',
-        marginHorizontal: 10,
-        marginBottom: 10
-    },
-    message: {
-        backgroundColor: commonColors?.muted?.[300],
-        width: 150,
-        // height: 40,
-        borderRadius: 20,
-        paddingHorizontal: 10,
-        paddingVertical: 5,
-        display: 'flex',
-        justifyContent: 'center',
-        margin: 5
-    },
-    messagetext: {
-        fontSize: 14,
-        color: commonColors?.commonWhite,
-        fontWeight: '500',
-        textAlign: 'left',
-    }
 });
 
 export default styles;

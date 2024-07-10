@@ -24,7 +24,7 @@ const CustomHeader = (props) => {
                             </View>
                         </>}
                         <View style={styles.content}>
-                            <Text style={styles.name}>{route?.params?.name ? route?.params?.name : 'WhatsApp'}</Text>
+                            <Text style={[styles.name, { color: commonColors?.commonWhite }]}>{route?.params?.name ? route?.params?.name : 'WhatsApp'}</Text>
                             {route?.params?.name && chatItem?.isTyping && <Text style={styles.subcontent}>{'typing...'}</Text>}
                         </View>
                     </View>
@@ -58,13 +58,14 @@ const styles = StyleSheet.create({
         backgroundColor: commonColors?.teal?.[600],
         height: 80,
         width: Dimensions.get('screen').width,
-        paddingHorizontal: 20
+        paddingHorizontal: 20,
+        borderBottomWidth: 0.5,
+        borderBottomColor: commonColors?.muted[300]
     },
     name: {
         fontSize: 16,
         textAlign: 'left',
-        fontWeight: '800',
-        color: commonColors?.commonWhite
+        fontWeight: '800'
     },
     namecontainer: {
         display: 'flex',

@@ -52,6 +52,10 @@
   <key>UIStatusBarStyle</key>
   <string>UIStatusBarStyleDefault</string>
   <key>CADisableMinimumFrameDurationOnPhone</key>
+  <key>NSCameraUsageDescription</key>
+  <string>Need access to the camera for video calls</string>
+  <key>NSMicrophoneUsageDescription</key>
+  <string>Need access to the microphone for video calls</string>
   <true/>
 </dict>
 </plist>

@@ -12,8 +12,8 @@ import styles from './styles';
 const Chats = (props) => {
     const { navigation,getLoggedUser } = props;
 
-    const renderItem = ({ name, location }, index) => (
-        <TouchableOpacity key={index} style={styles.item} onPress={() => navigation.navigate('ChatDetails', { name, location  })}>
+    const renderItem = ({ name, location, id }, index) => (
+        <TouchableOpacity key={index} style={styles.item} onPress={() => navigation.navigate('ChatDetails', { name, location, id  })}>
             <View style={styles.avatar}>
                 <Text style={styles.label}>{name[0]}</Text>
             </View>
