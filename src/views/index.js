@@ -3,6 +3,7 @@ import Updates from "./Updates";
 import Calls from "./Calls";
 import Community from './Community';
 import ChatDetails from './Chats/ChatDetails';
+import VideoCall from "./Chats/VideoCall";
 
 import LandingScreen from "./LandingScreen/LandingScreen";
 import AngreeandContinue from './LandingScreen/AgreeandContinue';
@@ -28,5 +29,6 @@ export {
     ContactSupport,
     SearchHelpCentre,
     CountryQueve,
-    ChatDetails
+    ChatDetails,
+    VideoCall
 }

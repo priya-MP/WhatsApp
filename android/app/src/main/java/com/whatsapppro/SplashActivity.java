@@ -1,4 +1,4 @@
-package com.whatsapp; // Change this to your package name.
+package com.whatsapppro; // Change this to your package name.
 
 import android.content.Intent;
 import android.os.Bundle;

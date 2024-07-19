@@ -3,6 +3,8 @@ import { ImageBackground, View } from 'react-native';
 import { connect } from 'react-redux';
 import { collection, addDoc, doc, setDoc } from 'firebase/firestore';
 import { GiftedChat, Bubble, InputToolbar, Send } from 'react-native-gifted-chat';
+import RNImmediatePhoneCall from 'react-native-immediate-phone-call';
+import AgoraUIKit from 'agora-rn-uikit';
 
 // ** firebase ** //
 import { auth, db } from '../../firebase/config';
@@ -19,14 +21,18 @@ import { CustomHeader } from '../../components';
 // ** Helpers ** //
 import { unsubscribeMessages, unsubscribeType, getChatRoomId, updateMessageStatus } from '../../firebase/helpers';
 
+// ** constants ** //
+import { contacts } from '../../utils/constants';
+
 // ** styles ** //
 import styles from './styles';
 import { commonColors } from '../../utils/colors';
 
 const ChatDetails = (props) => {
     const [typingUsers, setTypingUsers] = useState([]);
+    const [videoCall, setVideoCall] = useState(false);
 
-    const { setChatHistory, chatHistory, route, navigation } = props;
+    const { setChatHistory, chatHistory, route, navigation, getLoggedUser } = props;
 
     const selectedUserId = route?.params?.id?.toString(); // Get the selected user ID from route params
     const currentUserId = auth.currentUser.uid;
@@ -39,13 +45,15 @@ const ChatDetails = (props) => {
         const unsubscribeTyping = unsubscribeType(setTypingUsers, chatRoomId, currentUserId); // typing event handler
 
         updateMessageStatus(chatRoomId, currentUserId); // Update status to 'delivered' when the user sends a message
-
-        return () => { 
-            unsubscribeMsg(); 
-             unsubscribeTyping();
-         };
+        return () => {
+            unsubscribeMsg();
+            unsubscribeTyping();
+        };
     }, [navigation, selectedUserId, currentUserId, chatHistory]);
-
+    
+      const startVideoCall = async () => {
+            setVideoCall(!videoCall);
+      };
 
     // Send messages
     const onSend = useCallback((messages = []) => {
@@ -122,11 +130,26 @@ const ChatDetails = (props) => {
         );
     };
 
+    const connectionData = {
+        appId: '1a6aba9dbcfa4bafa9b54487abe97c5e',
+        channel: 'test',
+    };
+    const rtcCallbacks = {
+        EndCall: () => setVideoCall(false),
+    };
+
+    const onPhoneCall = () => {
+        let findObj = (contacts || []).find((contact) => contact.id === parseInt(selectedUserId));
+
+        RNImmediatePhoneCall.immediatePhoneCall(findObj?.phone);
+    }
+
 
     return (
         <View style={{ flex: 1 }}>
-            <CustomHeader type={'chat'} {...props} />
-            <ImageBackground source={require('../../assets/background.png')} style={{ flex: 1, jalignItems: 'center' }}>
+            {videoCall && <AgoraUIKit connectionData={connectionData} rtcCallbacks={rtcCallbacks} />}
+            {!videoCall && <CustomHeader type={'chat'} {...props} onVideoAction={startVideoCall} onPhoneCallAction={onPhoneCall} />}
+            {!videoCall && <ImageBackground source={require('../../assets/background.png')} style={{ flex: 1, justifyContent: 'center' }}>
                 <GiftedChat
                     messages={(chatHistory || [])}
                     showAvatarForEveryMessage={true}
@@ -146,7 +169,7 @@ const ChatDetails = (props) => {
                         right: { color: commonColors?.muted?.[400], fontSize: 9, paddingLeft: 30 },
                     }}
                 />
-            </ImageBackground>
+            </ImageBackground>}
         </View>
     );
 };
@@ -155,7 +178,8 @@ const mapStateToProps = (state) => {
     const { global } = state;
     return {
         chatItem: global?.chatItem,
-        chatHistory: global?.chatHistory
+        chatHistory: global?.chatHistory,
+        getLoggedUser: global?.getLoggedUser
     }
 };
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View, StatusBar, Dimensions } from 'react-native';
+import { StyleSheet, Text, View, StatusBar, Dimensions, TouchableOpacity } from 'react-native';
 
 //** icons */
 import { Feather, MaterialCommunityIcons, Ionicons } from 'react-native-vector-icons';
@@ -10,7 +10,7 @@ import { connect } from 'react-redux';
 
 
 const CustomHeader = (props) => {
-    const { route, chatItem } = props;
+    const { route, chatItem, onVideoAction, onPhoneCallAction } = props;
     return (
         <>
             <StatusBar hidden={false} />
@@ -18,7 +18,9 @@ const CustomHeader = (props) => {
                 <View style={styles.container}>
                     <View style={styles.namecontainer}>
                         {route?.params?.name && <>
-                            <Ionicons name="arrow-back" size={24} color={commonColors?.commonWhite} />
+                            <TouchableOpacity onPress={() => props.navigation.goBack()} >
+                                <Ionicons name="arrow-back" size={24} color={commonColors?.commonWhite} />
+                            </TouchableOpacity>
                             <View style={styles.avatar}>
                                 <Text style={styles.label}>{route?.params?.name[0]}</Text>
                             </View>
@@ -29,9 +31,19 @@ const CustomHeader = (props) => {
                         </View>
                     </View>
                     <View style={styles.iconCointainer}>
-                        <Feather name={route?.params?.name ? 'video' : "search"} size={22} color={commonColors?.commonWhite} />
-                        {route?.params?.name ? <MaterialCommunityIcons name="phone-outline" size={22} color={commonColors?.commonWhite} />
+                        <TouchableOpacity onPress={() => {
+                            if (route?.params?.name) {
+                                onVideoAction();
+                            }
+                        }}>
+                            <Feather name={route?.params?.name ? 'video' : "search"} size={22} color={commonColors?.commonWhite} />
+                        </TouchableOpacity>
+                        {route?.params?.name ? <TouchableOpacity onPress={() => onPhoneCallAction()} >
+                            <MaterialCommunityIcons name="phone-outline" size={22} color={commonColors?.commonWhite} />
+                        </TouchableOpacity>
                             : <Feather name="camera" size={22} color={commonColors?.commonWhite} />}
+
+
                         <Feather name="more-vertical" size={22} color={commonColors?.commonWhite} />
                     </View>
                 </View>

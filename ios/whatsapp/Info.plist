@@ -56,6 +56,11 @@
   <string>Need access to the camera for video calls</string>
   <key>NSMicrophoneUsageDescription</key>
   <string>Need access to the microphone for video calls</string>
+    <key>LSApplicationQueriesSchemes</key>
+    <array>
+        <string>tel</string>
+        <string>telprompt</string>
+    </array>
   <true/>
 </dict>
 </plist>

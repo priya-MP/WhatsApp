@@ -42,6 +42,14 @@ const routesHandler = [
         isAuthenticate: true
     },
     {
+        name: 'VideoCall',
+        path: '/videocall',
+        component: screens?.VideoCall,
+        headerShown: false,
+        isTabView: false,
+        isAuthenticate: true
+    },
+    {
         name: 'LandingScreen',
         path: '/LandingScreen',
         component: screens?.LandingScreen,

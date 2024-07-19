@@ -19,6 +19,7 @@ const initialState = {
     searchCountry: "",
     getLoggedUser: {},
     chatHistory: [],
+    loggedIn: false,
     chatItem: {
         type: '',
         message: '',
@@ -77,6 +78,7 @@ function reducer(state = initialState, action) {
         case SET_LOGGED_USER:
             return {
                 ...state,
+                loggedIn: action?.payload ? true : false,
                 getLoggedUser: action?.payload,
             };
         default:

@@ -2,6 +2,7 @@ import React, { useRef, useState } from "react";
 import { View, Text, TouchableOpacity, StyleSheet, TouchableWithoutFeedback, TextInput } from 'react-native';
 import { useNavigation } from "@react-navigation/native";
 import { connect } from "react-redux";
+import { collection } from 'firebase/firestore';
 
 import { auth } from '../../firebase/config';
 import { createUserWithEmailAndPassword, updateProfile, signInWithEmailAndPassword } from 'firebase/auth';
@@ -80,9 +81,9 @@ const MobileNumber = (props) => {
                     setError('No user found with this email.');
                 } else if (errorCode === 'auth/missing-email') {
                     setError('Email is missing.');
-                } else if(errorCode === 'auth/email-already-in-use') {
-                   signin(userObj);
-                }else {
+                } else if (errorCode === 'auth/email-already-in-use') {
+                    signin(userObj);
+                } else {
                     setError(error.message);
                 }
                 console.log(errorMessage, ":: register request failed ");
@@ -92,8 +93,11 @@ const MobileNumber = (props) => {
     const signin = (userObj) => {
         signInWithEmailAndPassword(auth, userObj?.email, userObj?.password)
             .then((userCredential) => {
-                console.log(userCredential, "---userCredential")
                 setLoggedUser(userCredential);
+                const { uid } = userCredential.user;
+                // Store additional user info in Firestore
+                collection('users').doc(uid).set(userCredential.user);
+
                 navigation.navigate("Chats");
                 setError("");
             })
@@ -116,8 +120,6 @@ const MobileNumber = (props) => {
             setError("Please enter your phone number.")
         } else {
             let findUserByPhone = (contacts || []).find((contact) => contact.phone === mobilenumber);
-
-            console.log(findUserByPhone, "findUserByPhone")
             register(findUserByPhone);
         }
     }

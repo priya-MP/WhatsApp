@@ -1,21 +1,21 @@
 {
   "project_info": {
-    "project_number": "327704011010",
-    "project_id": "whatsapp-1426",
-    "storage_bucket": "whatsapp-1426.appspot.com"
+    "project_number": "1086255590455",
+    "project_id": "whatsapp-pro-1426",
+    "storage_bucket": "whatsapp-pro-1426.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:327704011010:android:207875f30d23b96a87e21b",
+        "mobilesdk_app_id": "1:1086255590455:android:b38831b7d1575800b823b2",
         "android_client_info": {
-          "package_name": "com.whatsapp"
+          "package_name": "com.whatsapppro"
         }
       },
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyDdbxIiwG2heQrJLb81se6Wb-py5xXg1f4"
+          "current_key": "AIzaSyCdKdjwf-xj05wwlS1XQhIgWxeFdhkMjb0"
         }
       ],
       "services": {

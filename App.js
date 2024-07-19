@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Provider } from 'react-redux';
+import { connect, Provider } from 'react-redux';
 import { StatusBar } from 'react-native';
 import SplashScreen from 'react-native-splash-screen';
 
@@ -41,7 +41,8 @@ const tabBarScreenOptions = {
   tabBarInactiveTintColor: '#a3a3a3',
 }
 
-const App = () => {
+const App = (props) => {
+  const { loggedIn } = props;
 
   useEffect(() => {
     SplashScreen?.hide();
@@ -80,11 +81,13 @@ const App = () => {
     }
   }
 
+  const initialRouteName = loggedIn ? 'Chats' : 'LandingScreen';
+
   return (
     <Provider store={store}>
       <NavigationContainer >
         <StatusBar barStyle={'light-content'} backgroundColor={commonColors?.teal?.[600]} />
-        <Stack.Navigator initialRouteName='LandingScreen' screenOptions={headerConfig}>
+        <Stack.Navigator initialRouteName={initialRouteName} screenOptions={headerConfig}>
           {
             routesHandler?.map((route, index) => (
               route?.isTabView ?
@@ -98,4 +101,12 @@ const App = () => {
   );
 }
 
-export default App;
+const mapStateToProps = (state) => {
+  const { getLoggedUser, loggedIn } = state?.global;
+  return {
+    getLoggedUser,
+    loggedIn
+  }
+}
+
+export default connect(mapStateToProps)(App);

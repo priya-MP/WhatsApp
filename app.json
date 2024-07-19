@@ -3,6 +3,9 @@
     "name": "whatsapp",
     "slug": "whatsapp",
     "version": "1.0.0",
+    "permissions": [
+        "android.permission.CALL_PHONE"
+      ],
     "assetBundlePatterns": [
       "**/*"
     ]

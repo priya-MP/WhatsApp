@@ -85,9 +85,14 @@ android {
 
     compileSdkVersion rootProject.ext.compileSdkVersion
 
-    namespace "com.whatsapp"
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    namespace "com.whatsapppro"
     defaultConfig {
-        applicationId "com.whatsapp"
+        applicationId "com.whatsapppro"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
@@ -149,6 +154,8 @@ dependencies {
     implementation 'com.google.firebase:firebase-analytics'
     implementation 'com.google.android.gms:play-services-safetynet:17.0.0'
     // implementation 'com.google.firebase:firebase-auth'
+
+     implementation project(':react-native-immediate-phone-call')
 
     implementation ('com.google.firebase:firebase-auth') {
         exclude group: 'com.google.android.gms'

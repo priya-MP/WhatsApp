@@ -1,4 +1,4 @@
-package com.whatsapp;
+package com.whatsapppro;
 
 import android.app.Application;
 import android.content.res.Configuration;
@@ -16,6 +16,7 @@ import com.facebook.soloader.SoLoader;
 import expo.modules.ApplicationLifecycleDispatcher;
 import expo.modules.ReactNativeHostWrapper;
 import com.horcrux.svg.SvgPackage; 
+import com.github.wumke.RNImmediatePhoneCall.RNImmediatePhoneCallPackage;
 
 import java.util.List;
 
@@ -35,6 +36,7 @@ public class MainApplication extends Application implements ReactApplication {
         packages.add(new com.swmansion.rnscreens.RNScreensPackage());
         // Packages that cannot be autolinked yet can be added manually here, for example:
         // packages.add(new MyReactNativePackage());
+        // packages.add(new RNImmediatePhoneCallPackage());
         return packages;
       }
 
